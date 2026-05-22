@@ -2,10 +2,8 @@ import * as cdk from "aws-cdk-lib/core";
 import { Construct } from "constructs";
 import * as codepipeline from "aws-cdk-lib/aws-codepipeline";
 import * as pipelines from "aws-cdk-lib/pipelines";
-import * as codebuild from "aws-cdk-lib/aws-codebuild";
-import * as codepipeline_actions from "aws-cdk-lib/aws-codepipeline-actions";
-import * as ec2 from "aws-cdk-lib/aws-ec2";
 import * as ssm from "aws-cdk-lib/aws-ssm";
+import { BuildSpec } from "aws-cdk-lib/aws-codebuild";
 export class CDKPipelineStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
@@ -13,40 +11,36 @@ export class CDKPipelineStack extends cdk.Stack {
     // CODEPIPELINE
     // GitHub Integration
     const oauth = cdk.SecretValue.secretsManager("github-token");
-    const owner = new cdk.CfnParameter(this, "OwnerName", {
-      type: "String",
-      default: "auxdible",
-      noEcho: true,
-    });
-    const repo = new cdk.CfnParameter(this, "RepoName", {
-      type: "String",
-      default: "cdk-test",
-      noEcho: true,
-    });
-    const branch = new cdk.CfnParameter(this, "BranchName", {
-      type: "String",
-      default: "master",
-      noEcho: true,
-    });
+
+    const owner = this.node.tryGetContext("githubOwner") ?? "auxdible";
+    const repo = this.node.tryGetContext("githubRepo") ?? "aws-test";
+    const branch = this.node.tryGetContext("githubBranch") ?? "master";
 
     const pipeline = new pipelines.CodePipeline(this, "InfraPipeline", {
       synth: new pipelines.ShellStep("Synth", {
-        input: pipelines.CodePipelineSource.gitHub(
-          owner.valueAsString + "/" + repo.valueAsString,
-          branch.valueAsString,
-          {
-            authentication: oauth,
-          },
-        ),
+        input: pipelines.CodePipelineSource.gitHub(owner + "/" + repo, branch, {
+          authentication: oauth,
+        }),
         commands: [
           "npm i -g pnpm",
-          "pnpm ci",
+          "pnpm i --no-frozen-lockfile",
           "pnpm run build",
           "cd ./apps/infra",
-          "pnpx cdk synth",
+          `pnpx cdk synth -c githubOwner=${owner} -c githubRepo=${repo} -c githubBranch=${branch}`,
         ],
         primaryOutputDirectory: "./apps/infra/cdk.out",
       }),
+      synthCodeBuildDefaults: {
+        partialBuildSpec: BuildSpec.fromObject({
+          phases: {
+            install: {
+              "runtime-versions": {
+                nodejs: "22",
+              },
+            },
+          },
+        }),
+      },
       pipelineName: "TestApp-InfraPipeline",
     });
   }
