@@ -30,6 +30,17 @@ export class CDKPipelineStack extends cdk.Stack {
         ],
         primaryOutputDirectory: "./apps/infra/cdk.out",
       }),
+      codeBuildDefaults: {
+        partialBuildSpec: BuildSpec.fromObject({
+          phases: {
+            install: {
+              "runtime-versions": {
+                nodejs: "22",
+              },
+            },
+          },
+        }),
+      },
       synthCodeBuildDefaults: {
         partialBuildSpec: BuildSpec.fromObject({
           phases: {

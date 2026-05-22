@@ -5,7 +5,9 @@ import * as codebuild from "aws-cdk-lib/aws-codebuild";
 import * as codepipeline_actions from "aws-cdk-lib/aws-codepipeline-actions";
 import * as ec2 from "aws-cdk-lib/aws-ec2";
 import * as ssm from "aws-cdk-lib/aws-ssm";
+import * as origins from "aws-cdk-lib/aws-cloudfront-origins";
 import * as cloudfront from "aws-cdk-lib/aws-cloudfront";
+import * as s3 from "aws-cdk-lib/aws-s3";
 export class AppStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
@@ -22,6 +24,19 @@ export class AppStack extends cdk.Stack {
     const repo = this.node.tryGetContext("githubRepo") ?? "aws-test";
     const branch = this.node.tryGetContext("githubBranch") ?? "master";
 
+    // ------
+    // Static Website (CloudFront/S3)
+    // ------
+    const outputBucket = new s3.Bucket(this, "WebsiteBucket");
+    const distribution = new cloudfront.Distribution(
+      this,
+      "MyAppDistribution",
+      {
+        defaultBehavior: {
+          origin: origins.S3BucketOrigin.withOriginAccessControl(outputBucket),
+        },
+      },
+    );
     // ------
     // CI/CD
     // ------
@@ -72,6 +87,12 @@ export class AppStack extends cdk.Stack {
       outputs: [outputArtifact],
     });
 
+    const deployAction = new codepipeline_actions.S3DeployAction({
+      actionName: "Deploy",
+      input: outputArtifact,
+      bucket: outputBucket,
+      extract: true,
+    });
     const pipeline = new codepipeline.Pipeline(this, "CodePipeline", {
       pipelineName: "ApplicationPipeline",
       stages: [
