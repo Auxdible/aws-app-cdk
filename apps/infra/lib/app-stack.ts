@@ -104,6 +104,10 @@ export class AppStack extends cdk.Stack {
           stageName: "Build",
           actions: [buildAction],
         },
+        {
+          stageName: "Deploy",
+          actions: [deployAction],
+        },
       ],
     });
   }
