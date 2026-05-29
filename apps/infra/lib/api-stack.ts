@@ -18,7 +18,12 @@ export class ApiStack extends cdk.Stack {
       "HealthIntegration",
       healthLambda,
     );
-    const api = new api_gateway.HttpApi(this, "HttpApi");
+    const api = new api_gateway.HttpApi(this, "HttpApi", {
+      corsPreflight: {
+        allowCredentials: false,
+        allowOrigins: ["*"],
+      },
+    });
 
     api.addRoutes({
       path: "/health",
