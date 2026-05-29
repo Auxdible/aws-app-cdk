@@ -93,7 +93,7 @@ export class WebStack extends cdk.Stack {
       {
         vpc,
         environmentVariables: {
-          NEXT_PUBLIC_API_URL: { value: props?.apiUrl ?? "" },
+          VITE_PUBLIC_API_URL: { value: props?.apiUrl ?? "" },
         },
         buildSpec: codebuild.BuildSpec.fromObject({
           version: "0.2",

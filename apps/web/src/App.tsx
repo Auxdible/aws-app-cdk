@@ -20,6 +20,7 @@ function App() {
           <p>
             Edit <code>src/App.tsx</code> and save to test <code>HMR</code>
           </p>
+          <p>Your api url is {import.meta.env.VITE_PUBLIC_API_URL}</p>
         </div>
         <button
           type="button"
