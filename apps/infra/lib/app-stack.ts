@@ -100,7 +100,8 @@ export class AppStack extends cdk.Stack {
             },
           },
           artifacts: {
-            files: ["./apps/web/dist/*"],
+            files: ["**/*"],
+            "base-directory": "apps/web/dist",
           },
         }),
       },
