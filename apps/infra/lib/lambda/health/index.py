@@ -4,5 +4,5 @@ import botocore
 def health_handler(event, context):
     return {
         "statusCode": 200,
-        "message": "health check received!"
+        "body": "health check received!"
     }
