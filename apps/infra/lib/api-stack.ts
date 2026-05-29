@@ -24,6 +24,7 @@ export class ApiStack extends cdk.Stack {
         allowOrigins: ["*"],
         allowMethods: [api_gateway.CorsHttpMethod.ANY],
         allowHeaders: ["Content-Type", "Authorization"],
+        maxAge: cdk.Duration.hours(1),
       },
     });
 
