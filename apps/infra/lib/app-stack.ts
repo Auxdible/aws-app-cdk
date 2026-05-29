@@ -62,6 +62,7 @@ export class AppStack extends cdk.Stack {
       {
         vpc,
         buildSpec: codebuild.BuildSpec.fromObject({
+          version: "0.2",
           phases: {
             install: {
               commands: ["npm i -g pnpm", "pnpm i"],
