@@ -4,15 +4,15 @@ import * as codepipeline from "aws-cdk-lib/aws-codepipeline";
 import * as codebuild from "aws-cdk-lib/aws-codebuild";
 import * as codepipeline_actions from "aws-cdk-lib/aws-codepipeline-actions";
 import * as ec2 from "aws-cdk-lib/aws-ec2";
-import * as ssm from "aws-cdk-lib/aws-ssm";
+import * as lambda from "aws-cdk-lib/aws-lambda";
+import * as api_gateway from "aws-cdk-lib/aws-lambda";
 import * as origins from "aws-cdk-lib/aws-cloudfront-origins";
 import * as cloudfront from "aws-cdk-lib/aws-cloudfront";
 import * as s3 from "aws-cdk-lib/aws-s3";
+import * as path from "node:path";
 export class AppStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
-    // TODO: i have no idea what the frick to do here!
-
     // -----
     // Basics (VPC/etc)
     // -----
@@ -136,6 +136,15 @@ export class AppStack extends cdk.Stack {
           actions: [deployAction],
         },
       ],
+    });
+    // ------
+    // BACKEND (Lambdas/APIGateway)
+    // ------
+
+    const healthLambda = new lambda.Function(this, "HealthLambda", {
+      code: lambda.Code.fromAsset(path.join(__dirname, "lambda/health")),
+      handler: "index.health_handler",
+      runtime: lambda.Runtime.PYTHON_3_14,
     });
   }
 }

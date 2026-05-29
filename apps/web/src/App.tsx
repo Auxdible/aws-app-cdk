@@ -19,7 +19,6 @@ function App() {
           <h1>Get started</h1>
           <p>
             Edit <code>src/App.tsx</code> and save to test <code>HMR</code>
-            This is a test update!
           </p>
         </div>
         <button
