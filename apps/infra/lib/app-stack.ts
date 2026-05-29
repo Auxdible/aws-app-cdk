@@ -27,7 +27,13 @@ export class AppStack extends cdk.Stack {
     // ------
     // Static Website (CloudFront/S3)
     // ------
-    const outputBucket = new s3.Bucket(this, "WebsiteBucket");
+    const outputBucket = new s3.Bucket(this, "WebsiteBucket", {
+      blockPublicAccess: s3.BlockPublicAccess.BLOCK_ALL,
+      encryption: s3.BucketEncryption.S3_MANAGED,
+      removalPolicy: cdk.RemovalPolicy.DESTROY,
+      autoDeleteObjects: true,
+      enforceSSL: true,
+    });
     const distribution = new cloudfront.Distribution(
       this,
       "MyAppDistribution",
