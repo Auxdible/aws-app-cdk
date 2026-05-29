@@ -22,6 +22,8 @@ export class ApiStack extends cdk.Stack {
       corsPreflight: {
         allowCredentials: false,
         allowOrigins: ["*"],
+        allowMethods: [api_gateway.CorsHttpMethod.ANY],
+        allowHeaders: ["Content-Type", "Authorization"],
       },
     });
 
