@@ -33,11 +33,7 @@ export class ApiStack extends cdk.Stack {
       methods: [api_gateway.HttpMethod.GET],
       integration: healthIntegration,
     });
-    const stage = new api_gateway.HttpStage(this, "prod", {
-      httpApi: api,
-      stageName: "prod",
-      description: "Prod stage",
-    });
-    this.apiUrl = stage.url || "";
+
+    this.apiUrl = api.url || "";
   }
 }
