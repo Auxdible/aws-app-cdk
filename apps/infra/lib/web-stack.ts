@@ -5,13 +5,19 @@ import * as codebuild from "aws-cdk-lib/aws-codebuild";
 import * as codepipeline_actions from "aws-cdk-lib/aws-codepipeline-actions";
 import * as ec2 from "aws-cdk-lib/aws-ec2";
 import * as lambda from "aws-cdk-lib/aws-lambda";
-import * as api_gateway from "aws-cdk-lib/aws-lambda";
 import * as origins from "aws-cdk-lib/aws-cloudfront-origins";
 import * as cloudfront from "aws-cdk-lib/aws-cloudfront";
 import * as s3 from "aws-cdk-lib/aws-s3";
 import * as path from "node:path";
-export class AppStack extends cdk.Stack {
-  constructor(scope: Construct, id: string, props?: cdk.StackProps) {
+import * as integrations from "aws-cdk-lib/aws-apigatewayv2-integrations";
+import * as api_gateway from "aws-cdk-lib/aws-apigatewayv2";
+
+interface WebStackProps extends cdk.StackProps {
+  apiUrl: string;
+}
+
+export class WebStack extends cdk.Stack {
+  constructor(scope: Construct, id: string, props?: WebStackProps) {
     super(scope, id, props);
     // -----
     // Basics (VPC/etc)
@@ -86,6 +92,9 @@ export class AppStack extends cdk.Stack {
       "CDBuildApp",
       {
         vpc,
+        environmentVariables: {
+          NEXT_PUBLIC_API_URL: { value: props?.apiUrl ?? "" },
+        },
         buildSpec: codebuild.BuildSpec.fromObject({
           version: "0.2",
           phases: {
@@ -136,15 +145,6 @@ export class AppStack extends cdk.Stack {
           actions: [deployAction],
         },
       ],
-    });
-    // ------
-    // BACKEND (Lambdas/APIGateway)
-    // ------
-
-    const healthLambda = new lambda.Function(this, "HealthLambda", {
-      code: lambda.Code.fromAsset(path.join(__dirname, "lambda/health")),
-      handler: "index.health_handler",
-      runtime: lambda.Runtime.PYTHON_3_14,
     });
   }
 }

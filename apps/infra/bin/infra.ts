@@ -1,7 +1,6 @@
 #!/usr/bin/env node
 import * as cdk from "aws-cdk-lib/core";
 import { CDKPipelineStack } from "../lib/cdk-pipeline-stack";
-import { AppStack } from "../lib/app-stack";
 
 const app = new cdk.App();
 new CDKPipelineStack(app, "CDKPipelineStack", {
@@ -16,4 +15,3 @@ new CDKPipelineStack(app, "CDKPipelineStack", {
   // env: { account: '123456789012', region: 'us-east-1' },
   /* For more information, see https://docs.aws.amazon.com/cdk/latest/guide/environments.html */
 });
-new AppStack(app, "AppStack", {});
