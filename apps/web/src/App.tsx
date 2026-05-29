@@ -3,10 +3,22 @@ import reactLogo from "./assets/react.svg";
 import viteLogo from "./assets/vite.svg";
 import heroImg from "./assets/hero.png";
 import "./App.css";
+import { useQuery } from "react-query";
 
 function App() {
   const [count, setCount] = useState(0);
-
+  const {
+    data: text,
+    isLoading,
+    error,
+  } = useQuery({
+    queryKey: ["health"],
+    queryFn: async () => {
+      const data = await fetch(import.meta.env.VITE_API_URL + "/health");
+      const text = await data.text();
+      return text;
+    },
+  });
   return (
     <>
       <section id="center">
@@ -21,6 +33,7 @@ function App() {
             Edit <code>src/App.tsx</code> and save to test <code>HMR</code>
           </p>
           <p>Your api url is {import.meta.env.VITE_API_URL}</p>
+          {isLoading ? "Loading" : !error ? text : JSON.stringify(error)}
         </div>
         <button
           type="button"
