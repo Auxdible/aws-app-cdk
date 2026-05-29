@@ -18,6 +18,7 @@ export class CDKPipelineStack extends cdk.Stack {
     const branch = this.node.tryGetContext("githubBranch") ?? "master";
 
     const pipeline = new pipelines.CodePipeline(this, "InfraPipeline", {
+      selfMutation: true,
       synth: new pipelines.ShellStep("Synth", {
         input: pipelines.CodePipelineSource.gitHub(owner + "/" + repo, branch, {
           authentication: oauth,
