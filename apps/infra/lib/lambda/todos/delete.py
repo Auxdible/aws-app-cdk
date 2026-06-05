@@ -1,0 +1,41 @@
+import boto3
+import os
+import json
+from pydantic import BaseModel
+from aws_lambda_typing.events import APIGatewayProxyEventV2
+from aws_lambda_typing.context import Context
+from mypy_boto3_dynamodb import DynamoDBServiceResource
+
+class DeleteTodoBody(BaseModel):
+    id: str
+
+dynamodb: DynamoDBServiceResource = boto3.resource("dynamodb");
+
+def delete_todo(event: APIGatewayProxyEventV2, context: Context):
+    # validate body to ensure we actually have an id
+    try:
+        body = DeleteTodoBody.model_validate_json(event['body']);
+    except ValueError as e:
+        return {
+            "statusCode": 400,
+            "body": json.dumps({ "error": str(e) })
+        }
+    tableName = os.environ.get("TABLE_NAME");
+    if tableName is None:
+        return { 
+            "statusCode": 500,
+            "body": { "error": "No table environment variable found" } 
+        }
+    table = dynamodb.Table(tableName);
+
+    try:
+        table.delete_item(Key={ 'pk': body.id}, ConditionExpression="attribute_exists (pk)")
+        return {
+            "statusCode": 204,
+            "body": json.dumps({ "success": True })
+        }
+    except Exception as e:
+        return { 
+            "statusCode": 400,
+            "body": { "error": "That todo does not exist!" } 
+        }

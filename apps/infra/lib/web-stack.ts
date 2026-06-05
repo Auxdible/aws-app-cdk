@@ -4,13 +4,9 @@ import * as codepipeline from "aws-cdk-lib/aws-codepipeline";
 import * as codebuild from "aws-cdk-lib/aws-codebuild";
 import * as codepipeline_actions from "aws-cdk-lib/aws-codepipeline-actions";
 import * as ec2 from "aws-cdk-lib/aws-ec2";
-import * as lambda from "aws-cdk-lib/aws-lambda";
 import * as origins from "aws-cdk-lib/aws-cloudfront-origins";
 import * as cloudfront from "aws-cdk-lib/aws-cloudfront";
 import * as s3 from "aws-cdk-lib/aws-s3";
-import * as path from "node:path";
-import * as integrations from "aws-cdk-lib/aws-apigatewayv2-integrations";
-import * as api_gateway from "aws-cdk-lib/aws-apigatewayv2";
 
 interface WebStackProps extends cdk.StackProps {
   apiUrl: string;

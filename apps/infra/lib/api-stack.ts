@@ -10,25 +10,10 @@ export class ApiStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
-    const myTable = new dynamoDB.TableV2(this, "MyTable", {
-      partitionKey: { name: "pk", type: dynamoDB.AttributeType.STRING },
+    const myTable = new dynamoDB.TableV2(this, "KanbanTable", {
+      partitionKey: { name: "id", type: dynamoDB.AttributeType.STRING },
       removalPolicy: cdk.RemovalPolicy.DESTROY,
     });
-
-    const healthLambda = new lambda.Function(this, "HealthLambda", {
-      code: lambda.Code.fromAsset(path.join(__dirname, "lambda/health")),
-      handler: "index.health_handler",
-      runtime: lambda.Runtime.PYTHON_3_14,
-      environment: {
-        TABLE_NAME: myTable.tableName,
-      },
-    });
-    myTable.grantFullAccess(healthLambda);
-
-    const healthIntegration = new integrations.HttpLambdaIntegration(
-      "HealthIntegration",
-      healthLambda,
-    );
     const api = new api_gateway.HttpApi(this, "HttpApi", {
       corsPreflight: {
         allowCredentials: false,
@@ -38,11 +23,85 @@ export class ApiStack extends cdk.Stack {
         maxAge: cdk.Duration.hours(1),
       },
     });
+    const getTodosLambda = new lambda.Function(this, "GetTodo", {
+      code: lambda.Code.fromAsset(path.join(__dirname, "lambda/todos")),
+      handler: "get.get_all_todos",
+      runtime: lambda.Runtime.PYTHON_3_14,
+      environment: {
+        TABLE_NAME: myTable.tableName,
+      },
+    });
+    myTable.grantReadData(getTodosLambda);
+
+    const getTodosIntegration = new integrations.HttpLambdaIntegration(
+      "GetTodoIntegration",
+      getTodosLambda,
+    );
+
+    const postTodoLambda = new lambda.Function(this, "PostTodo", {
+      code: lambda.Code.fromAsset(path.join(__dirname, "lambda/todos")),
+      handler: "post.post_todo",
+      runtime: lambda.Runtime.PYTHON_3_14,
+      environment: {
+        TABLE_NAME: myTable.tableName,
+      },
+    });
+    myTable.grantFullAccess(postTodoLambda);
+
+    const postTodosIntegration = new integrations.HttpLambdaIntegration(
+      "PostTodoIntegration",
+      postTodoLambda,
+    );
+
+    const deleteTodoLambda = new lambda.Function(this, "HealthLambda", {
+      code: lambda.Code.fromAsset(path.join(__dirname, "lambda/todos")),
+      handler: "delete.delete_todo",
+      runtime: lambda.Runtime.PYTHON_3_14,
+      environment: {
+        TABLE_NAME: myTable.tableName,
+      },
+    });
+    myTable.grantFullAccess(deleteTodoLambda);
+
+    const deleteTodoIntegration = new integrations.HttpLambdaIntegration(
+      "DeleteTodoIntegration",
+      deleteTodoLambda,
+    );
+
+    const patchTodoLambda = new lambda.Function(this, "PatchTodoLambda", {
+      code: lambda.Code.fromAsset(path.join(__dirname, "lambda/todos")),
+      handler: "patch.patch_todoo",
+      runtime: lambda.Runtime.PYTHON_3_14,
+      environment: {
+        TABLE_NAME: myTable.tableName,
+      },
+    });
+    myTable.grantFullAccess(patchTodoLambda);
+
+    const patchTodoIntegration = new integrations.HttpLambdaIntegration(
+      "PatchTodoIntegration",
+      patchTodoLambda,
+    );
 
     api.addRoutes({
-      path: "/health",
+      path: "/todos",
       methods: [api_gateway.HttpMethod.GET],
-      integration: healthIntegration,
+      integration: getTodosIntegration,
+    });
+    api.addRoutes({
+      path: "/todos",
+      methods: [api_gateway.HttpMethod.POST],
+      integration: postTodosIntegration,
+    });
+    api.addRoutes({
+      path: "/todos",
+      methods: [api_gateway.HttpMethod.DELETE],
+      integration: deleteTodoIntegration,
+    });
+    api.addRoutes({
+      path: "/todos",
+      methods: [api_gateway.HttpMethod.PATCH],
+      integration: patchTodoIntegration,
     });
 
     this.apiUrl = api.url || "";

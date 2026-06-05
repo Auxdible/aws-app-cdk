@@ -5,7 +5,7 @@ import * as pipelines from "aws-cdk-lib/pipelines";
 import * as ssm from "aws-cdk-lib/aws-ssm";
 import { BuildSpec } from "aws-cdk-lib/aws-codebuild";
 import { AppStage } from "./stages/app-stage";
-export class CDKPipelineStack extends cdk.Stack {
+export class MainStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
