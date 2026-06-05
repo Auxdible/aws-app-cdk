@@ -20,7 +20,9 @@
     "deploy": {
       "dependsOn": ["^build"],
       "inputs": ["$TURBO_DEFAULT$", ".env*"],
-      "outputs": ["apps/infra/cdk.out"]
+      "outputs": ["apps/infra/cdk.out"],
+      "interactive": true,
+      "cache": false
     }
   }
 }

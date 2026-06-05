@@ -1,6 +1,7 @@
 import * as cdk from "aws-cdk-lib/core";
 import { Construct } from "constructs";
 import * as lambda from "aws-cdk-lib/aws-lambda";
+import * as python from "@aws-cdk/aws-lambda-python-alpha";
 import * as api_gateway from "aws-cdk-lib/aws-apigatewayv2";
 import * as integrations from "aws-cdk-lib/aws-apigatewayv2-integrations";
 import * as path from "node:path";
@@ -23,8 +24,8 @@ export class ApiStack extends cdk.Stack {
         maxAge: cdk.Duration.hours(1),
       },
     });
-    const getTodosLambda = new lambda.Function(this, "GetTodo", {
-      code: lambda.Code.fromAsset(path.join(__dirname, "lambda/todos")),
+    const getTodosLambda = new python.PythonFunction(this, "GetTodoLambda", {
+      entry: path.join(__dirname, "lambda/todos"),
       handler: "get.get_all_todos",
       runtime: lambda.Runtime.PYTHON_3_14,
       environment: {
@@ -38,8 +39,8 @@ export class ApiStack extends cdk.Stack {
       getTodosLambda,
     );
 
-    const postTodoLambda = new lambda.Function(this, "PostTodo", {
-      code: lambda.Code.fromAsset(path.join(__dirname, "lambda/todos")),
+    const postTodoLambda = new python.PythonFunction(this, "PostTodoLambda", {
+      entry: path.join(__dirname, "lambda/todos"),
       handler: "post.post_todo",
       runtime: lambda.Runtime.PYTHON_3_14,
       environment: {
@@ -53,14 +54,18 @@ export class ApiStack extends cdk.Stack {
       postTodoLambda,
     );
 
-    const deleteTodoLambda = new lambda.Function(this, "HealthLambda", {
-      code: lambda.Code.fromAsset(path.join(__dirname, "lambda/todos")),
-      handler: "delete.delete_todo",
-      runtime: lambda.Runtime.PYTHON_3_14,
-      environment: {
-        TABLE_NAME: myTable.tableName,
+    const deleteTodoLambda = new python.PythonFunction(
+      this,
+      "DeleteTodoLambda",
+      {
+        entry: path.join(__dirname, "lambda/todos"),
+        handler: "delete.delete_todo",
+        runtime: lambda.Runtime.PYTHON_3_14,
+        environment: {
+          TABLE_NAME: myTable.tableName,
+        },
       },
-    });
+    );
     myTable.grantFullAccess(deleteTodoLambda);
 
     const deleteTodoIntegration = new integrations.HttpLambdaIntegration(
@@ -68,9 +73,9 @@ export class ApiStack extends cdk.Stack {
       deleteTodoLambda,
     );
 
-    const patchTodoLambda = new lambda.Function(this, "PatchTodoLambda", {
-      code: lambda.Code.fromAsset(path.join(__dirname, "lambda/todos")),
-      handler: "patch.patch_todoo",
+    const patchTodoLambda = new python.PythonFunction(this, "PatchTodoLambda", {
+      entry: path.join(__dirname, "lambda/todos"),
+      handler: "patch.patch_todo",
       runtime: lambda.Runtime.PYTHON_3_14,
       environment: {
         TABLE_NAME: myTable.tableName,
