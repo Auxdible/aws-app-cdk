@@ -4,7 +4,6 @@ import botocore
 import uuid
 
 dynamodb = boto3.resource('dynamodb')
-
 def health_handler(event, context):
     tableName = os.environ.get("TABLE_NAME");
     if tableName is None:
@@ -13,7 +12,9 @@ def health_handler(event, context):
             "body": "You are missing a table name environment variable!"
         }
 
-    dynamodb.put_item(TableName=os.environ.get('TABLE_NAME'), Item={
+    table = dynamodb.Table(tableName);
+
+    table.put_item(Item={
         "pk": uuid.uuid7(),
         "ip": event['requestContext']['http']['sourceIp'],
         "message": "Test of me!!! DO I WORK!!!"
