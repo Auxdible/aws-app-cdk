@@ -26,7 +26,8 @@ export class ApiStack extends cdk.Stack {
     });
     const getTodosLambda = new python.PythonFunction(this, "GetTodoLambda", {
       entry: path.join(__dirname, "lambda/todos"),
-      handler: "get.get_all_todos",
+      index: "get.py",
+      handler: "get_all_todos",
       runtime: lambda.Runtime.PYTHON_3_14,
       environment: {
         TABLE_NAME: myTable.tableName,
@@ -41,7 +42,8 @@ export class ApiStack extends cdk.Stack {
 
     const postTodoLambda = new python.PythonFunction(this, "PostTodoLambda", {
       entry: path.join(__dirname, "lambda/todos"),
-      handler: "post.post_todo",
+      index: "post.py",
+      handler: "post_todo",
       runtime: lambda.Runtime.PYTHON_3_14,
       environment: {
         TABLE_NAME: myTable.tableName,
@@ -59,7 +61,8 @@ export class ApiStack extends cdk.Stack {
       "DeleteTodoLambda",
       {
         entry: path.join(__dirname, "lambda/todos"),
-        handler: "delete.delete_todo",
+        index: "delete.py",
+        handler: "delete_todo",
         runtime: lambda.Runtime.PYTHON_3_14,
         environment: {
           TABLE_NAME: myTable.tableName,
@@ -75,7 +78,8 @@ export class ApiStack extends cdk.Stack {
 
     const patchTodoLambda = new python.PythonFunction(this, "PatchTodoLambda", {
       entry: path.join(__dirname, "lambda/todos"),
-      handler: "patch.patch_todo",
+      index: "patch.py",
+      handler: "patch_todo",
       runtime: lambda.Runtime.PYTHON_3_14,
       environment: {
         TABLE_NAME: myTable.tableName,
