@@ -15,7 +15,7 @@ def health_handler(event, context):
     table = dynamodb.Table(tableName);
 
     table.put_item(Item={
-        "pk": uuid.uuid7(),
+        "pk": str(uuid.uuid7()),
         "ip": event['requestContext']['http']['sourceIp'],
         "message": "Test of me!!! DO I WORK!!!"
     });  
