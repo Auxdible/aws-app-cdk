@@ -49,8 +49,8 @@ function App() {
     queryKey: ["todos"],
     queryFn: async () => {
       const data = await fetch(import.meta.env.VITE_API_URL + "/todos");
-      const json: TodosInterface = await data.json();
-      return json;
+      const json: { data: TodosInterface[] } = await data.json();
+      return json.data;
     },
   });
   const form = useForm({ resolver: zodResolver(zTodosForm) });
@@ -105,15 +105,7 @@ function App() {
         </CardHeader>
         <CardContent>
           <ul>
-            {(
-              todos ?? [
-                {
-                  title: "Test",
-                  description: "test",
-                  id: "test",
-                },
-              ]
-            ).map((i) => (
+            {todos?.map((i) => (
               <li className="flex flex-col gap-2 bg-muted p-2 rounded-2xl">
                 <h1 className="text-2xl">{i.title}</h1>
                 <p className="text-base">{i.description}</p>
