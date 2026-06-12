@@ -36,7 +36,7 @@ def delete_todo(event: APIGatewayProxyEventV2, context: Context):
     table = dynamodb.Table(tableName);
 
     try:
-        table.delete_item(Key={ 'pk': body['id']}, ConditionExpression="attribute_exists (pk)")
+        table.delete_item(Key={ 'pk': body.get('id') }, ConditionExpression="attribute_exists (pk)")
         return {
             "statusCode": 204,
             "body": json.dumps({ "success": True })
