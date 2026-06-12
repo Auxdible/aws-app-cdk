@@ -1,6 +1,7 @@
 import boto3
 import os
 import json
+import base64
 from uuid import uuid7
 from typing import TYPE_CHECKING
 from pydantic import BaseModel
@@ -20,8 +21,10 @@ class CreateTodoBody(BaseModel):
 def post_todo(event: APIGatewayProxyEventV2, context: Context):
     # validate body to ensure it matches what we're looking for
     try:
-        print(event['body'])
-        body = CreateTodoBody.model_validate_json(event['body'])
+        raw = event.get("body") or ""
+        if event.get("isBase64Encoded"):
+            raw = base64.b64decode(raw).decode("utf-8")
+        body = CreateTodoBody.model_validate_json(raw)
     except ValueError as e:
         return { 
             "statusCode": 400,

@@ -4,7 +4,7 @@ import json
 from typing import TYPE_CHECKING
 from uuid import uuid7
 from pydantic import BaseModel
-
+import base64
 
 if TYPE_CHECKING:
     from mypy_boto3_dynamodb import DynamoDBServiceResource
@@ -22,7 +22,10 @@ class PatchTodoBody(BaseModel):
 def patch_todo(event: APIGatewayProxyEventV2, context: Context):
     # validate body to ensure it matches what we're looking for
     try:
-        body = PatchTodoBody.model_validate_json(event['body'])
+        raw = event.get("body") or ""
+        if event.get("isBase64Encoded"):
+            raw = base64.b64decode(raw).decode("utf-8")
+        body = PatchTodoBody.model_validate_json(raw)
     except ValueError as e:
         return { 
             "statusCode": 400,

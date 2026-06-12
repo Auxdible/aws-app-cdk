@@ -3,7 +3,7 @@ import os
 import json
 from typing import TYPE_CHECKING
 from pydantic import BaseModel
-
+import base64
 
 if TYPE_CHECKING:
     from aws_lambda_typing.events import APIGatewayProxyEventV2
@@ -18,7 +18,10 @@ dynamodb: DynamoDBServiceResource = boto3.resource("dynamodb");
 def delete_todo(event: APIGatewayProxyEventV2, context: Context):
     # validate body to ensure we actually have an id
     try:
-        body = DeleteTodoBody.model_validate_json(event['body']);
+        raw = event.get("body") or ""
+        if event.get("isBase64Encoded"):
+            raw = base64.b64decode(raw).decode("utf-8")
+        body = DeleteTodoBody.model_validate_json(raw);
     except ValueError as e:
         return {
             "statusCode": 400,
