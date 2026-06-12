@@ -1,10 +1,14 @@
 import boto3
 import os
 import json
+from typing import TYPE_CHECKING
 from pydantic import BaseModel
-from aws_lambda_typing.events import APIGatewayProxyEventV2
-from aws_lambda_typing.context import Context
-from mypy_boto3_dynamodb import DynamoDBServiceResource
+
+
+if TYPE_CHECKING:
+    from aws_lambda_typing.events import APIGatewayProxyEventV2
+    from aws_lambda_typing.context import Context
+    from mypy_boto3_dynamodb import DynamoDBServiceResource
 
 class DeleteTodoBody(BaseModel):
     id: str

@@ -1,7 +1,9 @@
 import boto3
 import os
+from typing import TYPE_CHECKING
 
-from mypy_boto3_dynamodb import DynamoDBServiceResource
+if TYPE_CHECKING:
+    from mypy_boto3_dynamodb import DynamoDBServiceResource
 
 dynamodb: DynamoDBServiceResource = boto3.resource("dynamodb");
 

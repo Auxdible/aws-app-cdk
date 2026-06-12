@@ -2,11 +2,13 @@ import boto3
 import os
 import json
 from uuid import uuid7
+from typing import TYPE_CHECKING
 from pydantic import BaseModel
-from mypy_boto3_dynamodb import DynamoDBServiceResource
-from aws_lambda_typing.events import APIGatewayProxyEventV2
-from aws_lambda_typing.context import Context
 
+if TYPE_CHECKING:
+    from mypy_boto3_dynamodb import DynamoDBServiceResource
+    from aws_lambda_typing.events import APIGatewayProxyEventV2
+    from aws_lambda_typing.context import Context
 
 dynamodb: DynamoDBServiceResource = boto3.resource("dynamodb");
 
