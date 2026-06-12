@@ -62,9 +62,7 @@ function App() {
     mutationFn: async (data: TodosForm) => {
       const { data: res } = await axios.post<{ id: string }>(
         import.meta.env.VITE_API_URL + "/todos",
-        {
-          body: new URLSearchParams(data),
-        },
+        new URLSearchParams(data),
       );
       queryClient.invalidateQueries({ queryKey: ["todos"] });
       reset();

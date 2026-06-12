@@ -20,6 +20,7 @@ def delete_todo(event: APIGatewayProxyEventV2, context: Context):
     # validate body to ensure we actually have an id
     try:
         raw = event['queryStringParameters']
+        print(raw)
         body = DeleteTodoBody.model_validate(raw)
     except ValueError as e:
         return {
