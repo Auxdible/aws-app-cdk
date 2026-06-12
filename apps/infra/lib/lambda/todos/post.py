@@ -20,6 +20,7 @@ class CreateTodoBody(BaseModel):
 def post_todo(event: APIGatewayProxyEventV2, context: Context):
     # validate body to ensure it matches what we're looking for
     try:
+        print(event['body'])
         body = CreateTodoBody.model_validate_json(event['body'])
     except ValueError as e:
         return { 
