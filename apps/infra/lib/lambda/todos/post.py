@@ -16,7 +16,6 @@ dynamodb: DynamoDBServiceResource = boto3.resource("dynamodb");
 class CreateTodoBody(BaseModel):
     title: str
     description: str
-    tags: list[str]
 
 def post_todo(event: APIGatewayProxyEventV2, context: Context):
     # validate body to ensure it matches what we're looking for

@@ -18,7 +18,6 @@ class PatchTodoBody(BaseModel):
     id: str 
     title: str | None = None
     description: str | None = None
-    tags: list[str] | None = None
 
 def patch_todo(event: APIGatewayProxyEventV2, context: Context):
     # validate body to ensure it matches what we're looking for
