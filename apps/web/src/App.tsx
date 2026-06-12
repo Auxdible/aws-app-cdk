@@ -102,7 +102,7 @@ function App() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <ul>
+          <ul className="space-y-4">
             {todos?.map((i) => (
               <li className="flex flex-col gap-2 bg-muted p-2 rounded-2xl">
                 <h1 className="text-2xl">{i.title}</h1>
