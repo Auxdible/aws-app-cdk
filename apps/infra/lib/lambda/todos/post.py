@@ -41,7 +41,7 @@ def post_todo(event: APIGatewayProxyEventV2, context: Context):
         item_id = str(uuid7())
         created = table.put_item(Item={
             "id": item_id,
-            **body
+            **body.model_dump()
         });
         
         return {
