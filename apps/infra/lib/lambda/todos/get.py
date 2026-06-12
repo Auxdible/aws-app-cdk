@@ -1,6 +1,7 @@
 import boto3
 import os
 from typing import TYPE_CHECKING
+import json
 
 if TYPE_CHECKING:
     from mypy_boto3_dynamodb import DynamoDBServiceResource
@@ -13,7 +14,7 @@ def get_all_todos(event, context):
     if tableName is None:
         return {
             "statusCode": 500,
-            "body": { "error": "No table environment variable found" } 
+            "body": json.dumps({ "error": "No table environment variable found" })
         }
     table = dynamodb.Table(tableName);
     res = table.scan();
@@ -23,6 +24,6 @@ def get_all_todos(event, context):
         items.extend(res['Items'])
     return {
         "statusCode": 200,
-        "body": { "data": items }
+        "body": json.dumps({ "data": items })
     }    
     
