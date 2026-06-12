@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING
 from uuid import uuid7
 from pydantic import BaseModel
 import base64
+from urllib.parse import parse_qsl
 
 if TYPE_CHECKING:
     from mypy_boto3_dynamodb import DynamoDBServiceResource
@@ -25,7 +26,7 @@ def patch_todo(event: APIGatewayProxyEventV2, context: Context):
         raw = event.get("body") or ""
         if event.get("isBase64Encoded"):
             raw = base64.b64decode(raw).decode("utf-8")
-        body = PatchTodoBody.model_validate(json.loads(raw))
+        body = PatchTodoBody.model_validate(dict(parse_qsl(raw)))
     except ValueError as e:
         return { 
             "statusCode": 400,

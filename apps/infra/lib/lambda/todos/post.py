@@ -5,7 +5,7 @@ import base64
 from uuid import uuid7
 from typing import TYPE_CHECKING
 from pydantic import BaseModel
-
+from urllib.parse import parse_qsl
 if TYPE_CHECKING:
     from mypy_boto3_dynamodb import DynamoDBServiceResource
     from aws_lambda_typing.events import APIGatewayProxyEventV2
@@ -24,7 +24,7 @@ def post_todo(event: APIGatewayProxyEventV2, context: Context):
         raw = event.get("body") or ""
         if event.get("isBase64Encoded"):
             raw = base64.b64decode(raw).decode("utf-8")
-        body = CreateTodoBody.model_validate(json.loads(raw))
+        body = CreateTodoBody.model_validate(dict(parse_qsl(raw)))
     except ValueError as e:
         return { 
             "statusCode": 400,

@@ -3,6 +3,7 @@ import os
 import json
 from typing import TYPE_CHECKING
 from pydantic import BaseModel
+from urllib.parse import parse_qsl
 import base64
 
 if TYPE_CHECKING:
@@ -21,7 +22,7 @@ def delete_todo(event: APIGatewayProxyEventV2, context: Context):
         raw = event.get("body") or ""
         if event.get("isBase64Encoded"):
             raw = base64.b64decode(raw).decode("utf-8")
-        body = DeleteTodoBody.model_validate(json.loads(raw))
+        body = DeleteTodoBody.model_validate(dict(parse_qsl(raw)))
     except ValueError as e:
         return {
             "statusCode": 400,
