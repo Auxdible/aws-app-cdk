@@ -19,10 +19,8 @@ dynamodb: DynamoDBServiceResource = boto3.resource("dynamodb");
 def delete_todo(event: APIGatewayProxyEventV2, context: Context):
     # validate body to ensure we actually have an id
     try:
-        raw = event.get("body") or ""
-        if event.get("isBase64Encoded"):
-            raw = base64.b64decode(raw).decode("utf-8")
-        body = DeleteTodoBody.model_validate(dict(parse_qsl(raw)))
+        raw = event['queryStringParameters']
+        body = DeleteTodoBody.model_validate(raw)
     except ValueError as e:
         return {
             "statusCode": 400,
