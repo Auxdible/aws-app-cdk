@@ -28,7 +28,7 @@ def delete_todo(event: APIGatewayProxyEventV2, context: Context):
     if tableName is None:
         return { 
             "statusCode": 500,
-            "body": { "error": "No table environment variable found" } 
+            "body":  json.dumps({ "error": "No table environment variable found" })
         }
     table = dynamodb.Table(tableName);
 
@@ -41,5 +41,5 @@ def delete_todo(event: APIGatewayProxyEventV2, context: Context):
     except Exception as e:
         return { 
             "statusCode": 400,
-            "body": { "error": "That todo does not exist!" } 
+            "body":  json.dumps({ "error": "That todo does not exist!" })
         }
